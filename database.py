@@ -22,8 +22,16 @@ def getRows(table_name):
     finishDB(connection, cursor)
     return results
 
+
+def write_to_blackjack_table(result_list):
+    connection = setupDB()
+    cursor = connection.cursor()
+    cursor.executemany("INSERT INTO [dbo].[Blackjack] VALUES(?,?,?,?)",result_list)
+    finishDB(connection, cursor)
+    return
+
 def main():
-    print(getRows('PokerStandings'))
+    print(getRows('Blackjack'))
 
 
 if __name__ == '__main__':

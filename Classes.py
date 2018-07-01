@@ -76,6 +76,9 @@ class TableMember:
         else:
             self._cards=cards
 
+    def __str__(self):
+        return 'TableMember'
+
     def get_cards(self):
         return self._cards
 

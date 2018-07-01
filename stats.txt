@@ -1,0 +1,56 @@
+First test
+
+Bot was guessing randomly
+
+Won 34.39% of hands
+
+Interesting charts:
+
+Starting Values	        Chance of winning
+2	                    61.9047619047619
+3	                    31.875
+4	                    39.0243902439024
+5	                    31.547619047619
+6	                    34.3915343915344
+7	                    35.3061224489796
+8	                    35.9929078014184
+9	                    37.3493975903614
+10	                    44.4047619047619
+11                    	42.3986486486487
+12                    	29.6754250386399
+13                    	28.5143769968051
+14                    	30.7890222984563
+15                    	28.0445969125214
+16                    	31.2037037037037
+17                    	29.4401544401544
+18                    	34.0776699029126
+19	                    39.1440501043841
+20	                    42.2368421052632
+
+
+
+Action Taken	        Chance of winning
+Stand	                36.4336715520481
+Hit	                    30.2245563201739
+Double Down            	37.2696817420436
+Split	                38.9175257731959
+
+Dealer's face up card	        Chance of bot winning (dealer losing)
+2                             	35.2941176470588
+3                             	38.952380952381
+4                             	38.6243386243386
+5                             	47.7678571428571
+6                             	41.7572463768116
+7                             	37.4336283185841
+8                             	34.6153846153846
+9                             	36.9801084990958
+10                            	28.0210157618214
+Jack	                        29.6564195298373
+Queen	                        31.2
+King	                        30.5996472663139
+Ace	                            17.6068376068376
+
+
+
+Note: these results were recorded as all aces having a value of 1. This only applies with recording the value though. 
+In gameplay an Ace was treated as both/either 1 and 11. 
