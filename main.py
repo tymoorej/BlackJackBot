@@ -1,6 +1,7 @@
 from Classes import Deck
 from Classes import Player
 from Classes import Dealer
+from Classes import TableMember
 
 printing=True
 
@@ -32,10 +33,16 @@ def get_insurance(player, dealer):
     if dealer.get_cards()[0][0] == 14 and player.get_current_bet() * 1.5 <= player.get_chips():
         if prompt_player('Would you like insurance? y or n?') == 'y':
             return int(player.get_current_bet() * 0.5)
-    else:
-        return 0
+    return 0
+
+def can_split(cards):
+    if(cards[0][0]<10 or cards[0][0]==14):
+        return cards[0][0] == cards[1][0]
+        
+    return (cards[1][0] < 14 and cards[1][0] >= 10)
 
 def first_round(player, dealer, deck):
+    second_hand = None
     skip_to_end = False
     if player.has_blackjack():
         ifprint('You have BlackJack! You cannot make any more moves this round.')
@@ -46,7 +53,7 @@ def first_round(player, dealer, deck):
         if player.get_current_bet() * 2 <= player.get_chips():
             options.append('Double Down')
 
-        if player.get_cards()[0][0] == player.get_cards()[1][0]:
+        if can_split(player.get_cards()):
             options.append('Split')
         
         choice = ''
@@ -67,10 +74,12 @@ def first_round(player, dealer, deck):
             skip_to_end = True
         
         elif choice.lower() == 'Split'.lower():
-            # TODO
-            pass
+            second_hand = TableMember()
+            second_hand.add_card(player.pop_card())
+            deck.deal(player,1)
+            deck.deal(second_hand,1)
 
-    return skip_to_end
+    return skip_to_end, second_hand
 
 def middle_round(player, dealer, deck):
     skip_to_end = False
@@ -104,6 +113,12 @@ def compare_hands(player, dealer):
     else:
         return 'dealer'
     
+def dealers_turn(dealer, deck):
+    while (not dealer.is_busted()) and dealer.can_hit():
+        ifprint('The dealer hit')
+        deck.deal(dealer,1)
+        ifprint('The dealer\'s cards are: ' + str(dealer.get_cards()))
+
 
 def end_round(player, dealer, deck):
     ifprint('The dealer\'s cards are: ' + str(dealer.get_cards()))
@@ -122,13 +137,6 @@ def end_round(player, dealer, deck):
         player.add_chips(int(player.get_current_bet() * 1.5))
         return
 
-
-
-    while (not dealer.is_busted()) and dealer.can_hit():
-        ifprint('The dealer hit')
-        deck.deal(dealer,1)
-        ifprint('The dealer\'s cards are: ' + str(dealer.get_cards()))
-
     result = compare_hands(player, dealer)
 
     if result == 'tie':
@@ -145,7 +153,6 @@ def end_round(player, dealer, deck):
         ifprint('You lose!')
         return
     
-
 def play_round(player, dealer, deck):
     deck.shuffle()
     ifprint('You have ' + str(player.get_chips()) + ' chips')
@@ -156,12 +163,44 @@ def play_round(player, dealer, deck):
     ifprint('Your current bet is ' + str(player.get_current_bet()))
     if player.get_insurance_bet() > 0:
         ifprint('Your insurance bet is ' + str(player.get_insurance_bet()) )
-    skip_to_end=first_round(player, dealer, deck)
+    skip_to_end, second_hand=first_round(player, dealer, deck)
     ifprint('Your cards are: ' + str(player.get_cards()))
+
+    if second_hand != None:
+        ifprint('Your cards in your second hand are: ' + str(second_hand.get_cards()))
+        ifprint('First Hand:')
+
     while not skip_to_end:
         skip_to_end = middle_round(player, dealer, deck)
         ifprint('Your cards are: ' + str(player.get_cards()))
+
+    
+    if second_hand != None:
+        ifprint('Second Hand:')
+        ifprint('Your cards in your second hand are: ' + str(second_hand.get_cards()))
+        skip_to_end=False
+        while not skip_to_end:
+            skip_to_end = middle_round(second_hand, dealer, deck)
+            ifprint('Your second hand cards are: ' + str(second_hand.get_cards()))
+    
+    dealers_turn(dealer, deck)
+    
+    if second_hand!= None:
+        ifprint('First Hand:')
+
     end_round(player, dealer, deck)
+    player.set_insurance_bet(0)
+
+    if second_hand!= None:
+        ifprint('You now have ' + str(player.get_chips()) + ' chips')
+        deck.collect([player])
+        ifprint('Second Hand:')
+        for c in second_hand.get_cards():
+            second_hand.remove_card(c)
+            player.add_card(c)
+        end_round(player, dealer, deck)
+        
+
     deck.collect([dealer,player])
     player.set_current_bet(0)
     player.set_insurance_bet(0)
@@ -171,8 +210,6 @@ def play(player, dealer, deck):
     while(player.get_chips()>0):
         play_round(player, dealer, deck)
     ifprint('You\'re all out of money :(')
-
-
 
 def main():
     player, dealer, deck = setup()

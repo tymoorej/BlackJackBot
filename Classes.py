@@ -103,11 +103,10 @@ class TableMember:
         card0 = self._cards[0]
         card1 = self._cards[1]
         
-        return ((card0[0]==14 and card1[0]>=10 and card1[0]<14) or (card1[0]==14 and card0[0]>=10 and card0<14))
+        return ((card0[0]==14 and card1[0]>=10 and card1[0]<14) or (card1[0]==14 and card0[0]>=10 and card0[0]<14))
     
     def is_busted(self):
         total = 0
-
         for c in self._cards:
             value = c[0]
             if value == 14:
