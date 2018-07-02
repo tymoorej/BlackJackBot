@@ -3,7 +3,10 @@ from Classes import Player
 from Classes import Dealer
 from Classes import TableMember
 from database import write_to_blackjack_table
+from database import getRows
 import random
+from sklearn.neural_network import MLPClassifier
+
 
 actions = {0 : 'Stand', 1: 'Hit', 2: 'Double Down', 3: 'Split'}
 actions_rev = {v: k for k, v in actions.items()}
@@ -294,6 +297,14 @@ def play(player, dealer, deck):
     if should_print:
         ifprint('You\'re all out of money. :(')
 
+def train_bot():
+    rows = getRows('Blackjack')
+    x = [r[0:3] for r in rows]
+    y = [r[3] for r in rows]
+    MLP = MLPClassifier()
+    MLP = MLP.fit(x,y)
+    print(MLP.predict_proba([(20,5,0)])*100)
+
 def main():
     global game_mode, watching_bot
     game_mode = False
@@ -303,12 +314,14 @@ def main():
         print('You chose bot.')
         if prompt_player('Would you like to watch the bot play? y or n?').lower() == 'y':
             watching_bot = True
+        #train_bot()
     else:
         game_mode = 'p'
         print('You chose player.')
+
     player, dealer, deck = setup()
     play(player, dealer, deck)
-
+    
     write_to_blackjack_table(completed_results)
 
 

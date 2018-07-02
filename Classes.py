@@ -131,7 +131,7 @@ class TableMember:
 
 class Player(TableMember):
 
-    def __init__(self,chips=2000):
+    def __init__(self,chips=10000):
         super().__init__()
 
         self._current_bet=0
